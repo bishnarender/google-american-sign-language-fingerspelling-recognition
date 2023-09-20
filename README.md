@@ -1,6 +1,6 @@
 ## google-american-sign-language-fingerspelling-recognition
 ## score at 1st position is achieved.
-
+![asl-submission](https://github.com/bishnarender/google-american-sign-language-fingerspelling-recognition/assets/49610834/f6d237fd-96d6-4b46-8d8f-ad34d4be7237)
 
 ### Start 
 -----
@@ -22,6 +22,11 @@ Prior to data augmentations, the data was normalized with std/mean and nans were
 
 ### Part I
 -----
+![asl](https://github.com/bishnarender/google-american-sign-language-fingerspelling-recognition/assets/49610834/def5c7be-d56e-497d-ac87-2d9711d1e8f8)
+
+![asl_1](https://github.com/bishnarender/google-american-sign-language-fingerspelling-recognition/assets/49610834/94e4b105-a366-448f-a752-3eeff5c9475f)
+
+![asl_2](https://github.com/bishnarender/google-american-sign-language-fingerspelling-recognition/assets/49610834/45277807-da6e-404b-b3cf-4245814a2fd1)
 
 384 is the length of our input sequence. 144 is the embedding associated with each element of the input sequence. The same embedding is also used to create a "query, key and value" vector for an element in the input sequence. Since the "vector" length of the "query, key and value" vector is somewhat smaller than the embedding size (144). So, we have chosen this as 36. This created 4 self-attention heads.
 
@@ -48,8 +53,10 @@ https://www.youtube.com/watch?v=C6rV8BsrrCc
 ​These "absolute position embeddings" are transformed to per-head position embeddings such that the embedding size is the same as the embedding size of query vector of head.
 
 <b>Rotary position embedding:</b> rotate the affine-transformed word embedding vector by amount of angle multiples of its position index. Affine-transformed word embedding vector is a new vector through a linear transformation followed by an addition of a bias vector.
+![rotation_matrix](https://github.com/bishnarender/google-american-sign-language-fingerspelling-recognition/assets/49610834/1d3e47a8-7269-4547-a0b5-c8ba8f43e55e)
 
 The positions associated with each head are 36 and size of embedding to these positions depends upon sequence length. ​The per-head position embeddings are transformed to "rotary position embeddings" of elements after having dot product with query vectors of elements i.e., [x1,x2,x3,x4]@[sinθ1,cosθ1,sinθ2,cosθ2] to get [x1sinθ1 + x2cosθ1+ x3sinθ2 + x4cosθ2]. Where [x1,x2,x3,x4] is a "query vector" for element x, ​[sin,cos,sin,cos] is one of all position embeddings of a head and [x1sinθ1 + x2cosθ1+ x3sinθ2 + x4cosθ2] is the first index value of the rotary position vector of x. Similarly after having other index values for the "rotary position vector" of x, the vector becomes [..., -x1sinθ1 + x2cosθ1 - x3sinθ2 + x4cosθ2, ...]. Thus, per-head position embeddings rotate a "query vector" in its embedding space. Finally, we have transformed one-word position from "query vector space" to "embedding space of head positions". Hence, a neural network can learn to understand relative word positions. If a model can identify the relative positions of words by rotations, it should be able to detect any relative positions. 
+![relative](https://github.com/bishnarender/google-american-sign-language-fingerspelling-recognition/assets/49610834/e464b6e3-b354-42a9-85fa-a258732824ad)
 
 Rotary Position Embedding/Encoding (RoPE) comes with flexibility of being expand to any sequence lengths. Rotary embeddings speed up training ~2X and tf-lite inference approx ~3X allowing larger models to be used.
 
@@ -61,7 +68,9 @@ The reason for the too negative score for "padded positions" is because once you
 
 ### Part II
 -----
+![1_asl](https://github.com/bishnarender/google-american-sign-language-fingerspelling-recognition/assets/49610834/151f08c5-756b-436d-90f7-210067ac6285)
 
+![1_asl_1](https://github.com/bishnarender/google-american-sign-language-fingerspelling-recognition/assets/49610834/1081ae47-7fca-429f-8b5c-258d09457b44)
 Final loss which is used for gradient calculation is calculated as:
 <code>
 loss = (1- 0.02) * ((1-0.4)*loss_1 + 0.4 * loss_2) + 0.02 * loss_3

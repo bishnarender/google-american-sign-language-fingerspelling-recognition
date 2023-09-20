@@ -37,16 +37,11 @@ But using per-head position embeddings and then adding position information to "
 
 <b>Positional embedding is basically a learned/learnable positional encoding.</b>
 
-Absolute position embeddings are computed as:
-
-<b>PE_positive(position, 2i) = sin(position * e^(-2i * log(10000) / d_model))</b>
-
-<b>PE_positive(position, 2i+1) = cos(position * e^(-2i * log(10000) / d_model))</b>
-
-<b>PE_negative(position, 2i) = sin(-1 * position * e^(-2i * log(10000) / d_model))</b>
-
-<b>PE_negative(position, 2i+1) = cos(-1 * position * e^(-2i * log(10000) / d_model))</b>
-
+Absolute position embeddings are computed as:<br>
+<b>PE_positive(position, 2i) = sin(position * e^(-2i * log(10000) / d_model))</b><br>
+<b>PE_positive(position, 2i+1) = cos(position * e^(-2i * log(10000) / d_model))</b><br>
+<b>PE_negative(position, 2i) = sin(-1 * position * e^(-2i * log(10000) / d_model))</b><br>
+<b>PE_negative(position, 2i+1) = cos(-1 * position * e^(-2i * log(10000) / d_model))</b><br>
 Both positive and negative absolute embeddings are computed for each position in order to represent a "rotation matrix" for each position.
 https://www.youtube.com/watch?v=C6rV8BsrrCc
 

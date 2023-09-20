@@ -81,6 +81,7 @@ In this part, again "rotary position embeddings" are created but in a different 
 Rotary embeddings ​are cached once and fe​d ​into each layer/module with the input data so they are not duplicated in each layer. This resulted in 20% less parameters in the model.
 
 Further, this part results in "relative position embeddings" after having dot-product between query and key vectors. Because, here we have "rotary position embeddings" for key vectors also in addition to query vectors.
+![llama_rotary](https://github.com/bishnarender/google-american-sign-language-fingerspelling-recognition/assets/49610834/c6256578-e3b0-49be-8959-136153617285)
 
 Additionally to the output of the encoder, a single linear layer is added to take the features of the first time-step (of the sequence) to predict a "confidence score", which helps to identify garbage data and can be used in post-processing. As a target/label for this we used normalized levensthein distance clipped to [0,1] of OOF predictions of a best model (from the first part). Further here in this part, val_score_pp represents levensthein distance after post-process (i.e., with dummy phrases to positions having "confidence score" less than 0.15).
 

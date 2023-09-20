@@ -31,15 +31,22 @@ Score vector of each element (in input sequence) is computed as [1,36]@[36,384] 
 Normalized score vector of each element (in input sequence) is then multiplied as [1,384]@[384,36] which gives [1,36]. Where [1,384] represents the score vector of the target element, [384,36] represents value vectors of elements and [1,36] represents the final result of the target element. Here, the theme is to dot product normalized score vector with the respective "index vector" one by one to get the resultant vector. Further, the first index vector is obtained by picking the first index values from each value vector.
 
 Absolute position embeddings (e.g., sine and cosine positional embeddings) provide the model with information about the order of tokens in a sequence, but they do not consider the relationships between tokens or their relative distances. Absolute position embeddings do not directly capture relative positions to each word.
-Instead, they provide a static reference to each token's position in the sequence. The problem with this approach is that it limits the maximum length of the sequence that the model can process, and it also ignores the relative distances between tokens. With additive positional embedding at input, the attention/score matrices have much lower rank, limiting the representative power. But using per-head position embeddings and then adding position information to "score/attention matrix" directly results in allowing for higher rank attention. Reference paper: "A Simple and Effective Positional Encoding for Transformers" by Pu-Chin Chen, Henry Tsai and Srinadh Bhojanapalli.
+Instead, they provide a static reference to each token's position in the sequence. The problem with this approach is that it limits the maximum length of the sequence that the model can process, and it also ignores the relative distances between tokens. With additive positional embedding at input, the attention/score matrices have much lower rank, limiting the representative power. 
+
+But using per-head position embeddings and then adding position information to "score/attention matrix" directly results in allowing for higher rank attention. Reference paper: "A Simple and Effective Positional Encoding for Transformers" by Pu-Chin Chen, Henry Tsai and Srinadh Bhojanapalli.
 
 <b>Positional embedding is basically a learned/learnable positional encoding.</b>
 
 Absolute position embeddings are computed as:
+
 <b>PE_positive(position, 2i) = sin(position * e^(-2i * log(10000) / d_model))</b>
+
 <b>PE_positive(position, 2i+1) = cos(position * e^(-2i * log(10000) / d_model))</b>
+
 <b>PE_negative(position, 2i) = sin(-1 * position * e^(-2i * log(10000) / d_model))</b>
+
 <b>PE_negative(position, 2i+1) = cos(-1 * position * e^(-2i * log(10000) / d_model))</b>
+
 Both positive and negative absolute embeddings are computed for each position in order to represent a "rotation matrix" for each position.
 https://www.youtube.com/watch?v=C6rV8BsrrCc
 

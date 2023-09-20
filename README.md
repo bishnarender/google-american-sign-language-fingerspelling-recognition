@@ -59,4 +59,62 @@ v_bias_param is the bias parameter and has the bias to each self-attention head.
 
 The reason for the too negative score for "padded positions" is because once you take the softmax of the scores, the too negative values get zeroed out. This essentially tells the model to put no focus on "padded positions".
 
+### Part II
+-----
+
+Final loss which is used for gradient calculation is calculated as:
+<code>
+loss = (1- 0.02) * ((1-0.4)*loss_1 + 0.4 * loss_2) + 0.02 * loss_3
+</code>
+
+In this part, again "rotary position embeddings" are created but in a different way using cached sin and cos ("transformers/models/llama/modeling_llama.py").
+
+Rotary embeddings ​are cached once and fe​d ​into each layer/module with the input data so they are not duplicated in each layer. This resulted in 20% less parameters in the model.
+
+Further, this part results in "relative position embeddings" after having dot-product between query and key vectors. Because, here we have "rotary position embeddings" for key vectors also in addition to query vectors.
+
+Additionally to the output of the encoder, a single linear layer is added to take the features of the first time-step (of the sequence) to predict a "confidence score", which helps to identify garbage data and can be used in post-processing. As a target/label for this we used normalized levensthein distance clipped to [0,1] of OOF predictions of a best model (from the first part). Further here in this part, val_score_pp represents levensthein distance after post-process (i.e., with dummy phrases to positions having "confidence score" less than 0.15).
+
+A "causal decoder" mainly uses "encoder cross attentions" for the sequence's beginning and "previous characters and cross attentions" for the end. To improve the model's accuracy, we use a separate causal decoder on the reversed sequence as an auxiliary loss, making the model rely more on the "encoder cross attention" for the label's end (i.e., in reverse order the previous end tokens become the first). 
+
+#### augmentation
+-----
+In addition to certain universal augmentation methods, some special methods are performed which I am discussing here.
+
+50% of time reverse the value of x over time-axis and then flip the order of keypoints/landmarks over time-axis.
+<code>
+#- data.shape => torch.Size([216, 130, 3])
+data[:,:,0] = -data[:,:,0]
+data = data[:,flip_array]
+</code>
+
+50% of time outer_cutmix: concat randomly cutted portion of two sequences of same participant.
+<code>
+new_phrase = phrase[cut_off_phrase:] + phrase2[:cut_off_phrase2]
+#- data.shape => torch.Size([156, 130, 3])
+new_data = torch.cat([data[cut_off_data:], data2[:cut_off_data2]])
+</code>
+
+75% of time mask finger landmarks i.e., assign 0.0 value to "x,y and z" of finger landmarks.
+<code>
+#- class FingersDrop
+hand_indices = [[t for t,l in enumerate(landmarks) if i in l] for i in 'x_left_ x_right_'.split()]
+hand_indices = np.array(hand_indices)
+#- hand_indices.shape => (2, 21)
+#- n_fingers => (2, 6)       
+
+#- reshaping after picking finger indices from hand.
+self.finger_indices = np.reshape(hand_indices[:,1:], (-1, 4))
+#- self.finger_indices.shape => (10, 4)
+
+drop_indices = self.finger_indices[fidx].flatten()
+#- drop_indices.shape => (48,)
+#- self.mask_value => 0.0
+x_new[:, drop_indices] =  torch.tensor(self.mask_value)
+</code>
+
+#### Final
+-----
+The final result is an ensemble of 2 models (trained over different seeds) from part 2.
+
 
